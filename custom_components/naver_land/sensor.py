@@ -21,9 +21,9 @@ SCAN_INTERVAL = datetime.timedelta(minutes=60)
 async def async_setup_entry(hass, config_entry, async_add_entities):
     """Set up the sensor platform."""
     naver_land_api = hass.data[DOMAIN][config_entry.entry_id]
-    async_add_entities([NaverLandMaxPrice(naver_land_api.apt_id, naver_land_api.area)], False)
-    async_add_entities([NaverLandMinPrice(naver_land_api.apt_id, naver_land_api.area)], False)
-    async_add_entities([NaverLandPriceDistribution(naver_land_api.apt_id, naver_land_api.area)], False)
+    async_add_entities([NaverLandMaxPrice(naver_land_api.apt_id, naver_land_api.area, naver_land_api.trade_type)], False)
+    async_add_entities([NaverLandMinPrice(naver_land_api.apt_id, naver_land_api.area, naver_land_api.trade_type)], False)
+    async_add_entities([NaverLandPriceDistribution(naver_land_api.apt_id, naver_land_api.area, naver_land_api.trade_type)], False)
 
 
 def convert_price_to_float(price_str):
@@ -42,9 +42,9 @@ def convert_price_to_float(price_str):
 
 
 class NaverLandMaxPrice(Entity):
-    def __init__(self, apt_id, area):
-        self.api = NaverLandApi(apt_id, area)
-        self._name = f"{apt_id}-max-price"
+    def __init__(self, apt_id, area, trade_type):
+        self.api = NaverLandApi(apt_id, area, trade_type)
+        self._name = f"{apt_id}-{trade_type}-max-price"
         self.device_id = hashlib.md5(f"{apt_id}-max".encode("UTF-8")).hexdigest()
         self._data = None
         self._value = None
@@ -92,9 +92,9 @@ class NaverLandMaxPrice(Entity):
 
 
 class NaverLandMinPrice(Entity):
-    def __init__(self, apt_id, area):
-        self.api = NaverLandApi(apt_id, area)
-        self._name = f"{apt_id}-min-price"
+    def __init__(self, apt_id, area, trade_type):
+        self.api = NaverLandApi(apt_id, area, trade_type)
+        self._name = f"{apt_id}-{trade_type}-min-price"
         self.device_id = hashlib.md5(f"{apt_id}-min".encode("UTF-8")).hexdigest()
         self._data = None
         self._value = None
@@ -142,9 +142,9 @@ class NaverLandMinPrice(Entity):
 
 
 class NaverLandPriceDistribution(Entity):
-    def __init__(self, apt_id, area):
-        self.api = NaverLandApi(apt_id, area)
-        self._name = f"{apt_id}-price-distribution"
+    def __init__(self, apt_id, area, trade_type):
+        self.api = NaverLandApi(apt_id, area, trade_type)
+        self._name = f"{apt_id}-{trade_type}-price-distribution"
         self.device_id = hashlib.md5(f"{apt_id}-price-dist".encode("UTF-8")).hexdigest()
         self._data = defaultdict(list)
         self._value = None

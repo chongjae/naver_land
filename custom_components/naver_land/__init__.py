@@ -5,7 +5,7 @@ import homeassistant.helpers.config_validation as cv
 from homeassistant.components import persistent_notification
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_USERNAME, CONF_VARIABLES
+from homeassistant.const import CONF_USERNAME
 from homeassistant.core import (
     HomeAssistant,
     ServiceResponse,
@@ -13,7 +13,7 @@ from homeassistant.core import (
     SupportsResponse,
 )
 from .naver_land import NaverLandApi
-from .const import DOMAIN
+from .const import DOMAIN, AREA, TYPE
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -28,8 +28,9 @@ async def async_setup(hass, config):
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Set up the integration from a config entry."""
     apt_id = entry.data[CONF_USERNAME]
-    area = entry.data[CONF_VARIABLES]
-    naver_land_api = NaverLandApi(apt_id, area)
+    area = entry.data[AREA]
+    trade_type = entry.data[TYPE]
+    naver_land_api = NaverLandApi(apt_id, area, trade_type)
 
     hass.data[DOMAIN][entry.entry_id] = naver_land_api
 

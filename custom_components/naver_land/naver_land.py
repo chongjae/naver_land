@@ -23,10 +23,11 @@ class Article:
                 f'CP Name: {self.cpName}, URL: {self.cpPcArticleUrl}')
 
 class NaverLandApi:
-    def __init__(self, apt_id, area):
+    def __init__(self, apt_id, area, trade_type):
         self.apt_name = None
         self.apt_id = apt_id
         self.area = area
+        self.trade_type = trade_type
         self.cookies = {
             'NNB': 'P5NZPDJIFBBWM',
             'ASID': '7db0cd8a0000018fbdd04b850000005d',
@@ -78,7 +79,7 @@ class NaverLandApi:
 
     async def get_apt_name(self):
         try:
-            url = f'https://new.land.naver.com/api/articles/complex/{self.apt_id}?realEstateType=APT%3AABYG%3AJGC%3APRE&tradeType=A1&tag=%3A%3A%3A%3A%3A%3A%3A%3A&rentPriceMin=0&rentPriceMax=900000000&priceMin=0&priceMax=900000000&areaMin=0&areaMax=900000000&oldBuildYears&recentlyBuildYears&minHouseHoldCount&maxHouseHoldCount&showArticle=false&sameAddressGroup=false&minMaintenanceCost&maxMaintenanceCost&priceType=RETAIL&directions=&page=1&complexNo={self.apt_id}&buildingNos=&areaNos={self.area}&type=list&order=rank'
+            url = f'https://new.land.naver.com/api/articles/complex/{self.apt_id}?realEstateType=APT%3AABYG%3AJGC%3APRE&tradeType={self.trade_type}&tag=%3A%3A%3A%3A%3A%3A%3A%3A&rentPriceMin=0&rentPriceMax=900000000&priceMin=0&priceMax=900000000&areaMin=0&areaMax=900000000&oldBuildYears&recentlyBuildYears&minHouseHoldCount&maxHouseHoldCount&showArticle=false&sameAddressGroup=false&minMaintenanceCost&maxMaintenanceCost&priceType=RETAIL&directions=&page=1&complexNo={self.apt_id}&buildingNos=&areaNos={self.area}&type=list&order=rank'
             resp = await self.session.get(
                 url=url
             )
@@ -91,7 +92,7 @@ class NaverLandApi:
 
     async def fetch_articles(self, page):
         try:
-            url = f'https://new.land.naver.com/api/articles/complex/{self.apt_id}?realEstateType=APT%3AABYG%3AJGC%3APRE&tradeType=A1&tag=%3A%3A%3A%3A%3A%3A%3A%3A&rentPriceMin=0&rentPriceMax=900000000&priceMin=0&priceMax=900000000&areaMin=0&areaMax=900000000&oldBuildYears&recentlyBuildYears&minHouseHoldCount&maxHouseHoldCount&showArticle=false&sameAddressGroup=false&minMaintenanceCost&maxMaintenanceCost&priceType=RETAIL&directions=&page={page}&complexNo={self.apt_id}&buildingNos=&areaNos={self.area}&type=list&order=rank'
+            url = f'https://new.land.naver.com/api/articles/complex/{self.apt_id}?realEstateType=APT%3AABYG%3AJGC%3APRE&tradeType={self.trade_type}&tag=%3A%3A%3A%3A%3A%3A%3A%3A&rentPriceMin=0&rentPriceMax=900000000&priceMin=0&priceMax=900000000&areaMin=0&areaMax=900000000&oldBuildYears&recentlyBuildYears&minHouseHoldCount&maxHouseHoldCount&showArticle=false&sameAddressGroup=false&minMaintenanceCost&maxMaintenanceCost&priceType=RETAIL&directions=&page={page}&complexNo={self.apt_id}&buildingNos=&areaNos={self.area}&type=list&order=rank'
             resp = await self.session.get(
                 url=url
             )

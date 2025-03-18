@@ -5,22 +5,30 @@ import voluptuous as vol
 
 import homeassistant.helpers.config_validation as cv
 from homeassistant.config_entries import ConfigFlow, ConfigFlowResult
-from homeassistant.const import CONF_USERNAME, CONF_VARIABLES
+from homeassistant.const import CONF_USERNAME
 from .naver_land import NaverLandApi
-from .const import DOMAIN, TITLE
+from .const import DOMAIN, TITLE, AREA, TYPE
 
 _LOGGER = logging.getLogger(__name__)
+
+TRADE_TYPES = {
+    "A1": "매매",
+    "B1": "전세",
+    "B2": "월세",
+    "B3": "단기임대"
+}
 
 STEP_USER_DATA_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_USERNAME): cv.string,
-        vol.Required(CONF_VARIABLES): cv.string
+        vol.Required(AREA): cv.string,
+        vol.Required(TYPE): vol.In(list(TRADE_TYPES.keys()))
     }
 )
 
 
-async def async_validate_login(hass, apt_id: str, area: str) -> dict[str, Any]:
-    client = NaverLandApi(apt_id, area)
+async def async_validate_login(hass, apt_id: str, area: str, trade_type: str) -> dict[str, Any]:
+    client = NaverLandApi(apt_id, area, trade_type)
 
     errors = {}
     try:
@@ -43,14 +51,24 @@ class NaverLandConfigFlow(ConfigFlow, domain=DOMAIN):
         """초기 단계 처리"""
 
         if user_input is None:
+            description_placeholders = {
+                "A1_desc": TRADE_TYPES["A1"],
+                "B1_desc": TRADE_TYPES["B1"],
+                "B2_desc": TRADE_TYPES["B2"],
+                "B3_desc": TRADE_TYPES["B3"],
+            }
+
             return self.async_show_form(
-                step_id="user", data_schema=STEP_USER_DATA_SCHEMA
+                step_id="user",
+                data_schema=STEP_USER_DATA_SCHEMA,
+                description_placeholders=description_placeholders
             )
 
         apt_id = user_input[CONF_USERNAME]
-        area = user_input[CONF_VARIABLES]
+        area = user_input[AREA]
+        trade_type = user_input[TYPE]
 
-        if errors := await async_validate_login(self.hass, apt_id, area):
+        if errors := await async_validate_login(self.hass, apt_id, area, trade_type):
             return self.async_show_form(
                 step_id="user",
                 data_schema=STEP_USER_DATA_SCHEMA,
